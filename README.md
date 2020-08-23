@@ -15,6 +15,7 @@ This is a repo with the purpose of automatically monitoring multiple crypto curr
 - Be able to buy/sell based on the implemented logic.
 - Have the system running in a server (currently on a Raspberry Pi). If there are algorithms that need more resources, then the system will meet the Cloud! The part of the sysmem that manages the account can probably stay in the Raspi and the heavier tasks can run on the Cloud. If the system evolves in a way that we need to divide the system, then we can create another API for that purpose using Flask.
 - Determine if a database is needed to store the information.
+- Have an alerting system that will let me know when subscribed important alerts.
 
 ## Kanban board
 
