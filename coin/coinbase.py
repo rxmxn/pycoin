@@ -1,6 +1,6 @@
 """Coinbase Python Client wrapper"""
 import cbpro
-from coin import Coin
+from coin.coin import Coin
 
 
 class Coinbase:
@@ -49,8 +49,3 @@ class Coinbase:
         self.get_book()
 
         return self.crypto
-
-
-c = Coinbase("BTC")
-crypto = c.get_current()
-print(crypto)
