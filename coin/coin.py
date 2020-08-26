@@ -1,69 +1,67 @@
+"""Base Crypto class that will be used in the system"""
 import numpy
 
-currencies = [
-        "ALGO", "DASH", "OXT", "ATOM", "KNC",
-        "XRP", "REP", "MKR", "OMG", "COMP",
-        "BAND", "XLM", "EOS", "ZRX", "BAT",
-        "LOOM", "CVC", "DNT", "MANA", "GNT",
-        "LINK", "BTC", "LTC", "ETH", "BCH",
-        "ETC", "ZEC", "XTZ", "DAI"]
 
-granularity = {
-        "1minute":60,
-        "5minutes":300,
-        "15minutes":900,
-        "1hour":3600,
-        "6hours":21600,
-        "1day":86400
-        }
+def percentage_difference(price, value):
+    """Use to calculate different percentages compared with the current price"""
+    return (price - value) * 100 / value if value != 0 else 0
 
 
 class Coin:
     """Coin is the main object that represents a cryto-currency"""
     def __init__(self, currency):
-        self.currency = currency + "-USD" if currency in currencies else ""
+        self.currency = currency
         self.price = 0
-        self.low24h = 0
-        self.high24h = 0
+        self.low = 0
+        self.high = 0
         self.last = 0
-        self.open24h = 0
+        self.open = 0
+        self.close = 0
         self.volume = 0
+        self.time = ""
         self.money_book = MoneyBook()
 
     def __str__(self):
         coin_string = list()
         coin_string.append("Currency: %s" % (self.currency))
-        coin_string.append("Current Price: %s" % (str(self.price)))
-        coin_string.append("Last: %s" % (str(self.last)))
-        coin_string.append("Volume: %s" % (str(self.volume)))
-        coin_string.append("Low Today: %s" % (str(self.low24h)))
-        coin_string.append("High Today: %s" % (str(self.high24h)))
-        coin_string.append("Open Today: %s" % (str(self.open24h)))
+        if self.price != 0:
+            coin_string.append("Current Price: %s" % (str(self.price)))
+        if self.close != 0:
+            coin_string.append("Closed Price: %s" % (str(self.close)))
+        if self.last != 0:
+            coin_string.append("Last: %s" % (str(self.last)))
+        if self.volume != 0:
+            coin_string.append("Volume: %s" % (str(self.volume)))
+        if self.low != 0:
+            coin_string.append("Low: %s" % (str(self.low)))
+        if self.high != 0:
+            coin_string.append("High: %s" % (str(self.high)))
+        if self.open != 0:
+            coin_string.append("Open: %s" % (str(self.open)))
+        if self.money_book.bids != 0 and self.money_book.asks != 0:
+            coin_string.append("Bids: %s" % (str(self.money_book.bids)))
+            coin_string.append("Asks: %s" % (str(self.money_book.asks)))
+            action = "Buy" if self.money_book.trending else "Sell"
+            coin_string.append("Trending to %s Ratio: %s" % (action, str(self.money_book.ratio)))
 
-        if self.money_book.trending:
-            coin_string.append("Trending to Buy Ratio: %s" % (str(self.money_book.ratio)))
-        else:
-            coin_string.append("Trending to Sell Ratio: %s" % (str(self.money_book.ratio)))
+        coin_string.append("Time: %s" % self.time)
 
-        coin_string.append("Price VS Open: %s %%" % (str(self.percent_open())))
-        coin_string.append("Price VS Last: %s %%" % (str(self.percent_last())))
+        if self.price != 0:
+            coin_string.append("Price VS Open: %s %%" % (str(self.percent_open())))
+            coin_string.append("Price VS Last: %s %%" % (str(self.percent_last())))
 
         return "\n".join(coin_string)
-
-    def percentage_difference(self, value):
-        """Use to calculate different percentages compared with the current price"""
-        return (self.price - value) * 100 / value
 
     def percent_open(self):
         """
         Calculate the percentage comparing Current Price with Open,
         which is similar to compare it with the value from 24 hours ago
         """
-        return self.percentage_difference(self.open24h)
+        return percentage_difference(self.price, self.open)
 
     def percent_last(self):
         """Calculate the percentage comparing Current Price with Last"""
-        return self.percentage_difference(self.last)
+        return percentage_difference(self.price, self.last)
 
 
 class MoneyBook:
@@ -97,5 +95,3 @@ class MoneyBook:
         else:
             self.trending = False
             self.ratio = self.asks/self.bids - 1
-
-

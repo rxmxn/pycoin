@@ -9,3 +9,7 @@ args = parser.parse_args()
 c = Coinbase(args.currency)
 crypto = c.get_current()
 print(crypto)
+
+print("\nHistorics")
+cryptos = c.get_historic_rates(nelements=300)
+print(cryptos[-1])
