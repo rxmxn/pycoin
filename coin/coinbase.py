@@ -71,8 +71,8 @@ class Coinbase:
 
         return crypto
 
-    def get_historic_rates(self, nelements=1, gran="1day"):
-        """Retrieve the n elements from historic data"""
+    def get_historic_rates(self, start=None, end=None, gran="1day", n_elements=1):
+        """Retrieve n-elements from historic data from start date to end date"""
 
         # Since this function is accessing historic data
         # and there is a limit of 1 call/second to this endpoint as a public member,
@@ -80,18 +80,18 @@ class Coinbase:
         time.sleep(1)
 
         historic = self.public_client.get_product_historic_rates(
-                product_id=self.currency, granularity=granularity[gran]
+                product_id=self.currency, start=start, end=end, granularity=granularity[gran]
                 )
 
         coin_list = list()
-        for i in range(0, nelements):
+        for hist in historic:
             hist_crypto = Coin(self.currency)
-            hist_crypto.time = datetime.utcfromtimestamp(historic[i][0]).strftime('%Y-%m-%d %H:%M:%S')
-            hist_crypto.low = historic[i][1]
-            hist_crypto.high = historic[i][2]
-            hist_crypto.open = historic[i][3]
-            hist_crypto.close = historic[i][4]
-            hist_crypto.volume = historic[i][5]
+            hist_crypto.time = datetime.utcfromtimestamp(hist[0]).strftime('%Y-%m-%d %H:%M:%S')
+            hist_crypto.low = hist[1]
+            hist_crypto.high = hist[2]
+            hist_crypto.open = hist[3]
+            hist_crypto.close = hist[4]
+            hist_crypto.volume = hist[5]
             coin_list.append(hist_crypto)
 
-        return coin_list
+        return coin_list[:n_elements]
