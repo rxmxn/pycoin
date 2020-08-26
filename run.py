@@ -1,7 +1,7 @@
 """Execute processes in the system"""
 import argparse
-from coin.coinbase import Coinbase
 from datetime import date
+from coin.coinbase import Coinbase
 
 parser = argparse.ArgumentParser(description="Communicate with your Crypto Account throgh this CLI")
 parser.add_argument("--currency", default="BTC", help="Crypto Currency Name")
@@ -18,8 +18,8 @@ print(cryptos[-1])
 hist = c.get_historic_rates()
 print(hist[-1])
 
-#check how to send dates
-#start = date(2019, 12, 5).isoformat()
-#print(start)
-#hist3 = c.get_historic_rates(start=start, n_elements=300)
-#print(hist3[-1])
+start = date(2019, 12, 5).isoformat()
+end = date(2020, 1, 5).isoformat()
+hist3 = c.get_historic_rates(start=start, end=end, n_elements=300)
+print(hist3[-1])
+print(hist3[0])

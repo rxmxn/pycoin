@@ -27,14 +27,14 @@ class Coinbase:
         self.public_client = cbpro.PublicClient()
         self.currency = currency + "-USD" if currency in currencies else ""
 
-    def get_ticker(self, crypto):
+    def __get_ticker(self, crypto):
         """Get ticker from Coinbase and update the crypto reference"""
         ticker = self.public_client.get_product_ticker(product_id=self.currency)
         crypto.price = float(ticker["price"])
         crypto.volume = float(ticker["volume"])
         crypto.time = ticker["time"]
 
-    def get_stats(self, crypto):
+    def __get_stats(self, crypto):
         """Get Stats from Coinbase and update the crypto reference"""
         stats = self.public_client.get_product_24hr_stats(product_id=self.currency)
         crypto.last = float(stats["last"])
@@ -42,7 +42,7 @@ class Coinbase:
         crypto.high = float(stats["high"])
         crypto.open = float(stats["open"])
 
-    def get_book(self, crypto):
+    def __get_book(self, crypto):
         """Get Bids and Asks from Coinbase and update the crypto reference"""
         book = self.public_client.get_product_order_book(product_id=self.currency, level=2)
         bid_list = list()
@@ -65,9 +65,9 @@ class Coinbase:
         """Get the Current values of a currency"""
         crypto = Coin(self.currency)
 
-        self.get_ticker(crypto)
-        self.get_stats(crypto)
-        self.get_book(crypto)
+        self.__get_ticker(crypto)
+        self.__get_stats(crypto)
+        self.__get_book(crypto)
 
         return crypto
 
