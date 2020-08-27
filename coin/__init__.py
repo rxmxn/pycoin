@@ -1,3 +1,1 @@
-from datetime import datetime as _datetime
-
-datetime = _datetime
+"""__init__ file for Coin"""
