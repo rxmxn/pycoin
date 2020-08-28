@@ -19,6 +19,7 @@ class Coin:
         self.close = 0
         self.volume = 0
         self.time = ""
+        self.market_cap = 0
         self.money_book = MoneyBook()
 
     def __str__(self):
@@ -38,6 +39,8 @@ class Coin:
             coin_string.append("High: %s" % (str(self.high)))
         if self.open != 0:
             coin_string.append("Open: %s" % (str(self.open)))
+        if self.market_cap != 0:
+            coin_string.append("Market Capital: %s" % (str(self.market_cap)))
         if self.money_book.bids != 0 and self.money_book.asks != 0:
             coin_string.append("Bids: %s" % (str(self.money_book.bids)))
             coin_string.append("Asks: %s" % (str(self.money_book.asks)))
