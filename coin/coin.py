@@ -21,6 +21,7 @@ class Coin:
         self.time = ""
         self.market_cap = 0
         self.money_book = MoneyBook()
+        self.rating = Rating()
 
     def __str__(self):
         coin_string = list()
@@ -52,6 +53,8 @@ class Coin:
         if self.price != 0:
             coin_string.append("Price VS Open: %s %%" % (str(self.percent_open())))
             coin_string.append("Price VS Last: %s %%" % (str(self.percent_last())))
+
+        coin_string.append(str(self.rating))
 
         return "\n".join(coin_string)
 
@@ -98,3 +101,26 @@ class MoneyBook:
         else:
             self.trending = False
             self.ratio = self.asks/self.bids - 1
+
+
+class Rating:
+    """Shows a current rating of the crypto currency"""
+    def __init__(self):
+        self.fcas_rating = ""
+        self.fcas_score = 0
+        self.developer_score = 0
+        self.market_maturity_score = 0
+        self.utility_score = 0
+        self.last_refreshed = ""
+
+    def __str__(self):
+        coin_string = list()
+
+        coin_string.append("FCAS Rating: %s" % self.fcas_rating)
+        coin_string.append("FCAS Score: %s" % str(self.fcas_score))
+        coin_string.append("Developer Score: %s" % str(self.developer_score))
+        coin_string.append("Market Maturity Score: %s" % str(self.market_maturity_score))
+        coin_string.append("Utility Score: %s" % str(self.utility_score))
+        coin_string.append("Last Refreshed: %s" % self.last_refreshed)
+
+        return ", ".join(coin_string)

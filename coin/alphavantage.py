@@ -45,3 +45,15 @@ class AlphaVantage:
                 coin_list.append(crypto)
 
         return coin_list
+
+    def get_crypto_rating(self, crypto):
+        try:
+            data = self.cc.get_digital_crypto_rating(symbol=self.currency)[0]
+            crypto.rating.fcas_rating = data['3. fcas rating']
+            crypto.rating.fcas_score = data['4. fcas score']
+            crypto.rating.developer_score = data['5. developer score']
+            crypto.rating.market_maturity_score = data['6. market maturity score']
+            crypto.rating.utility_score = data['7. utility score']
+            crypto.rating.last_refreshed = data['8. last refreshed']
+        except ValueError as err:
+            print("Currency %s is currently not getting any rating, returning error: %s" % (crypto.currency, err))
