@@ -17,6 +17,12 @@ This is a repo with the purpose of automatically monitoring multiple crypto curr
 - Determine if a database is needed to store the information.
 - Have an alerting system that will let me know when subscribed important alerts.
 
-## Kanban board
 
-To create tasks and manage the work, use this trello board: https://trello.com/b/FGxWOR6R/pycoin
+### Environment Requirements
+
+- `ALPHAVANTAGE_KEY`: Key given by AlphaVantage to access to the API
+- `CB_API_SECRET`: Secret provided by Coinbase Pro
+- `CB_ACCESS_KEY`: Key provided by Coinbase Pro
+- `CB_ACCESS_PASSPHRASE`: Pass phrase generated in Coinbase Pro
+- `COINBASE_PRO_SANDBOX`: Set to 1 to use Sandbox
+
