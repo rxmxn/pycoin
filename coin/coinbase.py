@@ -84,6 +84,11 @@ class Coinbase:
                 )
 
         coin_list = list()
+
+        if len(historic["message"]) > 0:
+            print(historic["message"])
+            return coin_list
+
         for hist in historic:
             hist_crypto = Coin(self.currency)
             hist_crypto.time = datetime.utcfromtimestamp(hist[0]).strftime('%Y-%m-%d %H:%M:%S')
