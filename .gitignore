@@ -1,2 +1,5 @@
 venv
 *.pyc
+env
+pycoin.egg-info
+__pycache__

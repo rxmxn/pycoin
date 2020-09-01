@@ -1,37 +1,61 @@
 """Execute processes in the system"""
-import argparse
-from datetime import date
+import click
 from coin.coinbase import Coinbase
 from coin.alphavantage import AlphaVantage
-
-parser = argparse.ArgumentParser(description="Communicate with your Crypto Account throgh this CLI")
-parser.add_argument("--currency", default="BTC", help="Crypto Currency Name")
-args = parser.parse_args()
-
-c = Coinbase(args.currency)
-crypto = c.get_current()
-
-#print("\nHistorics")
-#cryptos = c.get_historic_rates(n_elements=300)
-#print(cryptos[-1])
-
-#hist = c.get_historic_rates()
-#print(hist[-1])
-
-start = date(2019, 12, 5).isoformat()
-#end = date(2020, 1, 5).isoformat()
-#hist3 = c.get_historic_rates(start=start, end=end, n_elements=300)
-#print(hist3[-1])
-#print(hist3[0])
-
-a = AlphaVantage(args.currency)
-#cr = a.get_value_from_date(start)
-#print(cr)
+from coin.coin import Coin
 
 
-#crypto_list = a.get_historics(start="2019-01-01", end="2019-01-03")
-#for c in crypto_list:
-#    print(c)
+@click.group()
+def cli():
+    """Communicate with your Crypto Account throgh this CLI"""
+    pass
 
-a.get_crypto_rating(crypto)
-print(crypto)
+@cli.command()
+@click.argument('currency')
+def get_rating(currency):
+    c = Coinbase(currency)
+    crypto = Coin(currency)
+    a = AlphaVantage(currency)
+    a.get_crypto_rating(crypto)
+    click.echo(crypto)
+
+@cli.command()
+@click.argument('currency')
+def get_current(currency):
+    c = Coinbase(currency)
+    crypto = c.get_current()
+    click.echo(crypto)
+
+@cli.command()
+@click.argument('currency')
+@click.option('--n_elements', default=1, help='Number of elements to get from historic data')
+@click.option('--start', default=None, help='Start date to filter historic data')
+@click.option('--end', default=None, help='End date to filter historic data')
+@click.option('--granularity', default="1day", help='Set granularity to filter historic data: [1minute, 5minutes, 15minutes, 1hour, 6hours, 1day]')
+def get_historics(currency, n_elements, start, end, granularity):
+    c = Coinbase(currency)
+    cryptos = c.get_historic_rates(start=start, end=end, n_elements=n_elements, gran=granularity)
+    for crypto in cryptos:
+        click.echo(crypto)
+
+@cli.command()
+@click.argument('currency')
+@click.argument('date')
+def get_value_from_date(currency, date):
+    a = AlphaVantage(currency)
+    crypto = a.get_value_from_date(date)
+    click.echo(crypto)
+
+@cli.command()
+@click.argument('currency')
+@click.argument('start')
+@click.argument('end')
+def get_historics_from_alphavantage(currency, start, end):
+    a = AlphaVantage(currency)
+    cryptos = a.get_historics(start, end)
+    for crypto in cryptos:
+        click.echo(crypto)
+
+
+if __name__ == '__main__':
+    cli()

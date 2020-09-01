@@ -48,7 +48,8 @@ class Coin:
             action = "Buy" if self.money_book.trending else "Sell"
             coin_string.append("Trending to %s Ratio: %s" % (action, str(self.money_book.ratio)))
 
-        coin_string.append("Time: %s" % self.time)
+        if len(self.time) > 0:
+            coin_string.append("Time: %s" % self.time)
 
         if self.price != 0:
             coin_string.append("Price VS Open: %s %%" % (str(self.percent_open())))
@@ -116,11 +117,14 @@ class Rating:
     def __str__(self):
         coin_string = list()
 
-        coin_string.append("FCAS Rating: %s" % self.fcas_rating)
-        coin_string.append("FCAS Score: %s" % str(self.fcas_score))
-        coin_string.append("Developer Score: %s" % str(self.developer_score))
-        coin_string.append("Market Maturity Score: %s" % str(self.market_maturity_score))
-        coin_string.append("Utility Score: %s" % str(self.utility_score))
-        coin_string.append("Last Refreshed: %s" % self.last_refreshed)
+        if len(self.fcas_rating) > 0:
+            coin_string.append("FCAS Rating: %s" % self.fcas_rating)
+            coin_string.append("FCAS Score: %s" % str(self.fcas_score))
+            coin_string.append("Developer Score: %s" % str(self.developer_score))
+            coin_string.append("Market Maturity Score: %s" % str(self.market_maturity_score))
+            coin_string.append("Utility Score: %s" % str(self.utility_score))
+            coin_string.append("Last Refreshed: %s" % self.last_refreshed)
 
-        return ", ".join(coin_string)
+            return ", ".join(coin_string)
+        else:
+            return ""

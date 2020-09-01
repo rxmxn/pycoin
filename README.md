@@ -26,3 +26,12 @@ This is a repo with the purpose of automatically monitoring multiple crypto curr
 - `CB_ACCESS_PASSPHRASE`: Pass phrase generated in Coinbase Pro
 - `COINBASE_PRO_SANDBOX`: Set to 1 to use Sandbox
 
+### Installing executable
+
+```
+$ virtualenv venv
+$ . venv/bin/activate
+$ pip install --editable .
+
+$ pycoin --help
+```
