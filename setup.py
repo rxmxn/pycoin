@@ -29,6 +29,6 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        pycoin=run:cli
+        pycoin=cli:cli
     ''',
 )

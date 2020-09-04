@@ -1,6 +1,7 @@
 """Execute processes in the system"""
 import click
 import time
+import logging
 from coin.coinbase import Coinbase
 from coin.alphavantage import AlphaVantage
 from coin.coin import Coin
@@ -10,7 +11,8 @@ from coin.websocket import myWebsocketClient
 @click.group()
 def cli():
     """Communicate with your Crypto Account throgh this CLI"""
-    pass
+    logging.basicConfig(filename='pycoin.log', level=logging.INFO)
+    logging.info('Starting PyCoin')
 
 @cli.command()
 @click.argument('currency')
@@ -57,22 +59,6 @@ def get_historics_from_alphavantage(currency, start, end):
     cryptos = a.get_historics(start, end)
     for crypto in cryptos:
         click.echo(crypto)
-
-@cli.command()
-@click.argument('currency')
-def start_websocket(currency):
-    wsClient = myWebsocketClient()
-    wsClient.initialize()
-    wsClient.add_currency(currency)
-    wsClient.start()
-
-    print(wsClient.url, wsClient.products)
-
-    while (wsClient.message_count < 5):
-        print ("\nmessage_count =", "{} \n".format(wsClient.message_count))
-        time.sleep(1)
-
-    wsClient.close()
 
 
 if __name__ == '__main__':
