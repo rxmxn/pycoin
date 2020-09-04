@@ -6,9 +6,10 @@ from flask import Flask, request, jsonify
 from coin.coinbase import Coinbase
 from coin.alphavantage import AlphaVantage
 from coin.coin import Coin
-from coin.websocket import myWebsocketClient
+from coin.websocket import WSClient
 
 app = Flask(__name__)
+wsc = WSClient()
 
 def start_server():
     """Communicate with your Crypto Account throgh this Server"""
@@ -18,18 +19,12 @@ def start_server():
 
 @app.route('/start-websocket/<currency>', methods=['GET'])
 def start_websocket(currency):
-    wsClient = myWebsocketClient()
-    wsClient.set_currency(currency)
-    wsClient.start()
+    wsc.start(currency)
+    return jsonify({"Message": "WebSocket Started"})
 
-    print(wsClient.url, wsClient.products)
-
-    while (wsClient.message_count < 5):
-        print ("\nmessage_count =", "{} \n".format(wsClient.message_count))
-        time.sleep(1)
-
-    wsClient.close()
-
+@app.route('/stop-websocket', methods=['GET'])
+def stop_websocket():
+    wsc.stop()
     return jsonify({"Message": "WebSocket is Closed"})
 
 

@@ -2,25 +2,47 @@
 import cbpro
 import time
 import logging
+import threading
 from coin.coin import Coin
 from coin.coinbase import Coinbase, currencies
 
+# TODO: Check why do I need threading. Is it really doing anything now?
+# How can I take advantage of threading?
+# Do I really need this class at all if I will not use Threading?
+class WSClient(threading.Thread):
+    wsc = None
 
-class myWebsocketClient(cbpro.WebsocketClient):
-    def set_currency(self, currency):
+    def __init__(self):
+        logging.debug("WSClient initializing...")
+
+        self.wsc = CoinbaseWebsocketClient()
+
+        threading.Thread.__init__(self)
+
+    def start(self, currency):
         self.currency = currency + "-USD" if currency in currencies else ""
+        self.wsc.set_currency(self.currency)
+
+        self.wsc.start()
+        logging.info(self.wsc.url, self.wsc.products)
+
+    def stop(self):
+        if self.wsc is not None:
+            self.wsc.close()
+
+
+class CoinbaseWebsocketClient(cbpro.WebsocketClient):
+    def set_currency(self, currency):
+        self.currency = currency
         logging.debug("Setting currency to %s", self.currency)
 
     def on_open(self):
         self.products = [self.currency]
-        self.message_count = 0
         self.channels = ['ticker']
 
     def on_message(self, msg):
-        self.message_count += 1
         if 'price' in msg and 'type' in msg:
-            print ("Message type:", msg["product_id"],
-                   "\t@ {:.3f}".format(float(msg["price"])))
+            print(msg["price"])
 
     def on_close(self):
         print("-- Closing WebSocket --")
