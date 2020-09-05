@@ -5,7 +5,6 @@ import logging
 from coin.coinbase import Coinbase
 from coin.alphavantage import AlphaVantage
 from coin.coin import Coin
-from coin.websocket import myWebsocketClient
 
 
 @click.group()
