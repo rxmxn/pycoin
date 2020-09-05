@@ -43,6 +43,11 @@ class CoinbaseWebsocketClient(cbpro.WebsocketClient):
     def on_message(self, msg):
         if 'price' in msg and 'type' in msg:
             print(msg["price"])
+            # I can create an analytics class that this function can call
+            # to analyze the message. In that class I can have functions
+            # that will make the choices, including STOP_LOSS.
+            # I can create a coin object with the msg and then pass that coin
+            # to the analytics class or function.
 
     def on_close(self):
         print("-- Closing WebSocket --")
