@@ -3,3 +3,4 @@ venv
 env
 pycoin.egg-info
 __pycache__
+*.log

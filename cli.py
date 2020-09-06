@@ -1,5 +1,7 @@
 """Execute processes in the system"""
 import click
+import time
+import logging
 from coin.coinbase import Coinbase
 from coin.alphavantage import AlphaVantage
 from coin.coin import Coin
@@ -8,7 +10,8 @@ from coin.coin import Coin
 @click.group()
 def cli():
     """Communicate with your Crypto Account throgh this CLI"""
-    pass
+    logging.basicConfig(filename='pycoin.log', level=logging.INFO)
+    logging.info('Starting PyCoin')
 
 @cli.command()
 @click.argument('currency')

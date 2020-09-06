@@ -1,5 +1,6 @@
 """Coinbase Python Client wrapper"""
 import time
+import logging
 from datetime import datetime
 import cbpro
 from coin.coin import Coin
@@ -26,6 +27,7 @@ class Coinbase:
     def __init__(self, currency):
         self.public_client = cbpro.PublicClient()
         self.currency = currency + "-USD" if currency in currencies else ""
+        logging.info("Setting currency to %s", self.currency)
 
     def __get_ticker(self, crypto):
         """Get ticker from Coinbase and update the crypto reference"""

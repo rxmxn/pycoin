@@ -1,5 +1,7 @@
 """Base Crypto class that will be used in the system"""
 import numpy
+import json
+from flask import Flask, jsonify
 
 
 def percentage_difference(price, value):
@@ -59,6 +61,44 @@ class Coin:
 
         return "\n".join(coin_string)
 
+    def to_json(self):
+        data = {}
+        data["Currency"] = self.currency
+
+        if self.price != 0:
+            data["Price"] = self.price
+            data["Price_VS_Open_%"] = self.percent_open()
+
+        if self.close != 0:
+            data["Close"] = self.close
+
+        if self.last != 0:
+            data["Last"] = self.last
+
+        if self.volume != 0:
+            data["volume"] = self.volume
+
+        if self.low != 0 or self.high != 0:
+            data["Low"] = self.low
+            data["High"] = self.high
+
+        if self.open != 0:
+            data["Open"] = self.open
+
+        if self.market_cap != 0:
+            data["Market_Capital"] = self.market_cap
+
+        if len(self.time) > 0:
+            data["Time"] = self.time
+
+        if len(self.rating.fcas_rating) > 0:
+            data["Rating"] = self.rating.to_json()
+
+        if self.money_book.bids != 0 and self.money_book.asks != 0:
+            data["MoneyBook"] = self.money_book.to_json()
+
+        return jsonify(data)
+
     def percent_open(self):
         """
         Calculate the percentage comparing Current Price with Open,
@@ -80,6 +120,14 @@ class MoneyBook:
         self.bids = 0
         self.asks = 0
         self.orders = list()
+
+    def to_json(self):
+        data = {}
+        data["Bids"] = self.bids
+        data["Asks"] = self.asks
+        data["Trending"] = "UP" if self.trending else "DOWN"
+        data["TrendingRatio"] = self.ratio
+        return data
 
     def calculate_ratio(self, bid_list, ask_list):
         """
@@ -128,3 +176,14 @@ class Rating:
             return ", ".join(coin_string)
         else:
             return ""
+
+    def to_json(self):
+        data = {}
+        data["FCAS_Rating"] = self.fcas_rating
+        data["FCAS_Score"] = self.fcas_score
+        data["Developer_Score"] = self.developer_score
+        data["Market_Maturity_Score"] = self.market_maturity_score
+        data["Utility_Score"] = self.utility_score
+        data["Last_Refreshed"] = self.last_refreshed
+        return data
+
