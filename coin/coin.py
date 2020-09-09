@@ -60,8 +60,10 @@ class Coin:
         if len(self.time) > 0:
             coin_string.append("Time: %s" % self.time)
 
-        if self.price != 0:
+        if self.price != 0 and self.open != 0:
             coin_string.append("Price VS Open: %s %%" % (str(self.percent_open())))
+
+        if self.price != 0 and self.last != 0:
             coin_string.append("Price VS Last: %s %%" % (str(self.percent_last())))
 
         coin_string.append(str(self.rating))
