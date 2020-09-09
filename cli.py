@@ -2,9 +2,11 @@
 import click
 import time
 import logging
+import requests
 from coin.coinbase import Coinbase
 from coin.alphavantage import AlphaVantage
 from coin.coin import Coin
+from coin.server import Server
 
 
 @click.group()
@@ -20,6 +22,7 @@ def get_rating(currency):
     crypto = Coin(currency)
     a = AlphaVantage(currency)
     a.get_crypto_rating(crypto)
+    crypto.rating.save_to_db()
     click.echo(crypto)
 
 @cli.command()
@@ -27,6 +30,7 @@ def get_rating(currency):
 def get_current(currency):
     c = Coinbase(currency)
     crypto = c.get_current()
+    crypto.save_to_db()
     click.echo(crypto)
 
 @cli.command()
@@ -58,6 +62,20 @@ def get_historics_from_alphavantage(currency, start, end):
     cryptos = a.get_historics(start, end)
     for crypto in cryptos:
         click.echo(crypto)
+
+@cli.command()
+def start_server():
+    server = Server()
+    server.start_server()
+
+@cli.command()
+@click.argument('currency')
+def start_websocket(currency):
+    r = requests.get('http://127.0.0.1:5000/start-websocket/' + currency)
+
+@cli.command()
+def stop_websocket():
+    r = requests.get('http://127.0.0.1:5000/stop-websocket')
 
 
 if __name__ == '__main__':

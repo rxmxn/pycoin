@@ -2,6 +2,7 @@
 import numpy
 import json
 from flask import Flask, jsonify
+from pymongo import MongoClient
 
 
 def percentage_difference(price, value):
@@ -23,7 +24,13 @@ class Coin:
         self.time = ""
         self.market_cap = 0
         self.money_book = MoneyBook()
-        self.rating = Rating()
+
+        mongo_client = MongoClient('mongodb://localhost:27017/')
+        # specify the database
+        db = mongo_client.cryptocurrency_database
+        self.collection = db.crypto_collection
+
+        self.rating = Rating(db, currency)
 
     def __str__(self):
         coin_string = list()
@@ -99,6 +106,24 @@ class Coin:
 
         return jsonify(data)
 
+    def save_to_db(self):
+        self.collection.insert_one({
+            "time": self.time,
+            "currency": self.currency,
+            "price": self.price,
+            "price_vs_open_%": self.percent_open(),
+            "close": self.close,
+            "last": self.last,
+            "volume": self.volume,
+            "low": self.low,
+            "high": self.high,
+            "open": self.open,
+            "market_capital": self.market_cap,
+            "trending": "UP" if self.money_book.trending else "DOWN",
+            "trending_ratio": self.money_book.ratio,
+            "bids": self.money_book.bids,
+            "asks": self.money_book.asks})
+
     def percent_open(self):
         """
         Calculate the percentage comparing Current Price with Open,
@@ -154,13 +179,16 @@ class MoneyBook:
 
 class Rating:
     """Shows a current rating of the crypto currency"""
-    def __init__(self):
+    def __init__(self, db, currency):
         self.fcas_rating = ""
         self.fcas_score = 0
         self.developer_score = 0
         self.market_maturity_score = 0
         self.utility_score = 0
         self.last_refreshed = ""
+
+        self.collection = db.rating_collection
+        self.currency = currency
 
     def __str__(self):
         coin_string = list()
@@ -187,3 +215,7 @@ class Rating:
         data["Last_Refreshed"] = self.last_refreshed
         return data
 
+    def save_to_db(self):
+        data = self.to_json()
+        data["currency"] = self.currency
+        self.collection.insert_one(data)
