@@ -26,6 +26,10 @@ This is a repo with the purpose of automatically monitoring multiple crypto curr
 - `CB_ACCESS_PASSPHRASE`: Pass phrase generated in Coinbase Pro
 - `COINBASE_PRO_SANDBOX`: Set to 1 to use Sandbox
 
+### Dependencies
+
+`MongoDB`: To install MongoDB check [this](https://docs.mongodb.com/manual/administration/install-community/) site, and to use the shell check out [this](https://docs.mongodb.com/manual/mongo/) manual.
+
 ### Installing executable
 
 ```
@@ -35,3 +39,4 @@ $ pip install --editable .
 
 $ pycoin --help
 ```
+
