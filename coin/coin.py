@@ -221,3 +221,13 @@ class Rating:
         data = self.to_json()
         data["currency"] = self.currency
         self.collection.insert_one(data)
+
+    def filter_by_date(self, datefilter):
+        rating = self.collection.find_one({
+            "currency": self.currency,
+            "FCAS_SCORE": { "$ne": 0 },
+            "Last_Refreshed": { "$regex": "^" + str(datefilter) }
+            },
+            { "_id": 0 }
+            )
+        return rating

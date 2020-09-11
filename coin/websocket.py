@@ -3,7 +3,8 @@ import cbpro
 import time
 import logging
 from coin.coin import Coin
-from coin.coinbase import Coinbase, currencies
+from coin.coinbase import currencies
+from coin.analytics import Analytics
 
 
 class WSClient():
@@ -63,15 +64,8 @@ class CoinbaseWebsocketClient(cbpro.WebsocketClient):
             crypto.high = float(msg["high_24h"])
             crypto.time = msg["time"]
 
-            crypto.save_to_db()
-
-            print(crypto)
-
-            # I can create an analytics class that this function can call
-            # to analyze the message. In that class I can have functions
-            # that will make the choices, including STOP_LOSS.
-            # I can create a coin object with the msg and then pass that coin
-            # to the analytics class or function.
+            a = Analytics(self.currency)
+            a.analyze(crypto)
 
     def on_close(self):
         print("-- Closing WebSocket --")

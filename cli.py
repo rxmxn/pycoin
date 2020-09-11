@@ -7,6 +7,7 @@ from coin.coinbase import Coinbase
 from coin.alphavantage import AlphaVantage
 from coin.coin import Coin
 from coin.server import Server
+from coin.analytics import Analytics
 
 
 @click.group()
@@ -14,11 +15,20 @@ def cli():
     """Communicate with your Crypto Account throgh this CLI"""
     logging.basicConfig(filename='pycoin.log', level=logging.INFO)
     logging.info('Starting PyCoin')
+# TODO: CHECK OUT WHY LOGGING IS NOT WORKING. Maybe I deleted something that I shouldnt
+
+@cli.command()
+@click.argument('currency')
+def analyze(currency):
+    c = Coinbase(currency)
+    crypto = c.get_current()
+    a = Analytics(crypto.currency)
+    a.analyze(crypto)
+
 
 @cli.command()
 @click.argument('currency')
 def get_rating(currency):
-    c = Coinbase(currency)
     crypto = Coin(currency)
     a = AlphaVantage(currency)
     a.get_crypto_rating(crypto)
