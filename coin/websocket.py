@@ -2,14 +2,12 @@
 import cbpro
 import time
 import logging
-import threading
 from coin.coin import Coin
-from coin.coinbase import Coinbase, currencies
+from coin.coinbase import currencies
+from coin.analytics import Analytics
 
-# TODO: Check why do I need threading. Is it really doing anything now?
-# How can I take advantage of threading?
-# Do I really need this class at all if I will not use Threading?
-class WSClient(threading.Thread):
+
+class WSClient():
     wsc = None
 
     def __init__(self):
@@ -17,11 +15,9 @@ class WSClient(threading.Thread):
 
         self.wsc = CoinbaseWebsocketClient()
 
-        threading.Thread.__init__(self)
-
     def start(self, currency):
         self.currency = currency + "-USD" if currency in currencies else ""
-        self.wsc.set_currency(self.currency)
+        self.wsc.set_params(self.currency)
 
         self.wsc.start()
         logging.info(self.wsc.url, self.wsc.products)
@@ -32,8 +28,9 @@ class WSClient(threading.Thread):
 
 
 class CoinbaseWebsocketClient(cbpro.WebsocketClient):
-    def set_currency(self, currency):
+    def set_params(self, currency):
         self.currency = currency
+
         logging.debug("Setting currency to %s", self.currency)
 
     def on_open(self):
@@ -42,12 +39,33 @@ class CoinbaseWebsocketClient(cbpro.WebsocketClient):
 
     def on_message(self, msg):
         if 'price' in msg and 'type' in msg:
-            print(msg["price"])
-            # I can create an analytics class that this function can call
-            # to analyze the message. In that class I can have functions
-            # that will make the choices, including STOP_LOSS.
-            # I can create a coin object with the msg and then pass that coin
-            # to the analytics class or function.
+            # Example of a msg
+            # {         'type': 'ticker',
+            #           'sequence': 5218449005,
+            #           'product_id': 'LTC-USD',
+            #           'price': '47.35',
+            #           'open_24h': '48.48',
+            #           'volume_24h': '156948.95768504',
+            #           'low_24h': '46',
+            #           'high_24h': '49.36',
+            #           'volume_30d': '7215772.91842438',
+            #           'best_bid': '47.35',
+            #           'best_ask': '47.37',
+            #           'side': 'sell',
+            #           'time': '2020-09-09T01:33:56.828640Z',
+            #           'trade_id': 46635089,
+            #           'last_size': '2.0003386'}
+
+            crypto = Coin(self.currency)
+            crypto.price = float(msg["price"])
+            crypto.open = float(msg["open_24h"])
+            crypto.volume = float(msg["volume_24h"])
+            crypto.low = float(msg["low_24h"])
+            crypto.high = float(msg["high_24h"])
+            crypto.time = msg["time"]
+
+            a = Analytics(self.currency)
+            a.analyze(crypto)
 
     def on_close(self):
         print("-- Closing WebSocket --")
