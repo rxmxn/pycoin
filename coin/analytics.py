@@ -9,6 +9,21 @@ from coin.alphavantage import AlphaVantage
 class Analytics:
     def __init__(self, currency):
         self.currency = currency
+        self.lower_limit = 0
+        self.acceptable_percentage = 2
+        self.acceptable_score_difference = 20
+        self.acceptable_open_percentage_difference = 2
+        self.sell_flag = False
+        self.buy_flag = False
+
+    def set_acceptable_percentage(self, acceptable_percentage):
+        self.acceptable_percentage = acceptable_percentage
+
+    def set_acceptable_score_difference(self, acceptable_score_difference):
+        self.acceptable_score_difference = acceptable_score_difference
+
+    def set_acceptable_open_percentage_difference(self, acceptable_open_percentage_difference):
+        self.acceptable_open_percentage_difference = acceptable_open_percentage_difference
 
     def analyze(self, crypto):
         # sell if ( (get_rating(currency).FCAS_SCORE << yesterday_rating.FCAS_SCORE) && (rating.FCAS_Score > 800) && (PriceVSOpen < 2%) && STOP_LOSS == True )
@@ -43,8 +58,35 @@ class Analytics:
         price_vs_open = crypto.percent_open()
         print(price_vs_open)
 
+        stop_loss = self.stop_loss(crypto)
+        print(stop_loss)
+
+        if (rating is not None and rating < self.acceptable_score_difference * -1 ) \
+            and price_vs_open < self.acceptable_open_percentage_difference * -1 \
+            and stop_loss:
+                self.sell_flag = True
+
+        if (rating is not None and rating > self.acceptable_score_difference) \
+            and (rating_today is not None and rating_today["FCAS_Score"] > 800) \
+            and price_vs_open > self.acceptable_open_percentage_difference:
+                self.buy_flag = True
+
+        print("SELL FLAG = " + str(self.sell_flag))
+        print("BUY FLAG = " + str(self.buy_flag))
+
+
     def stop_loss(self, crypto):
         # STOP_LOSS is True if (current_price < lower_limit where lower_limit = upper_limit - upper_limit * acceptable_percentage) Acceptable_percentage default = 2%
         # if the value goes up, the lower_limit keeps increasing, but if the value goes down, lower_limit does not change
 
-        return True
+        current_value_limit = crypto.price * (1 - self.acceptable_percentage/100)
+
+        if self.lower_limit < current_value_limit:
+            self.lower_limit = current_value_limit
+
+        logging.info("Current value limit: %s\nLower limit: %s\nAcceptable percentage: %s", current_value_limit, self.lower_limit, self.acceptable_percentage)
+
+        if crypto.price < self.lower_limit:
+            return True
+
+        return False

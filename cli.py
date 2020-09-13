@@ -13,9 +13,8 @@ from coin.analytics import Analytics
 @click.group()
 def cli():
     """Communicate with your Crypto Account throgh this CLI"""
-    logging.basicConfig(filename='pycoin.log', level=logging.INFO)
+    logging.basicConfig(filename='pycoin.log', level=logging.DEBUG)
     logging.info('Starting PyCoin')
-# TODO: CHECK OUT WHY LOGGING IS NOT WORKING. Maybe I deleted something that I shouldnt
 
 @cli.command()
 @click.argument('currency')
