@@ -81,10 +81,12 @@ def start_server():
 @click.argument('currency')
 def start_websocket(currency):
     r = requests.get('http://127.0.0.1:5000/start-websocket/' + currency)
+    #r = requests.get('http://0.0.0.0:5000/start-websocket/' + currency)
 
 @cli.command()
 def stop_websocket():
     r = requests.get('http://127.0.0.1:5000/stop-websocket')
+    #r = requests.get('http://0.0.0.0:5000/stop-websocket')
 
 
 if __name__ == '__main__':

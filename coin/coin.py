@@ -1,6 +1,8 @@
 """Base Crypto class that will be used in the system"""
+import logging
 import numpy
 import json
+import sys
 from flask import Flask, jsonify
 from pymongo import MongoClient
 
@@ -25,10 +27,14 @@ class Coin:
         self.market_cap = 0
         self.money_book = MoneyBook()
 
-        mongo_client = MongoClient('mongodb://localhost:27017/')
-        # specify the database
-        db = mongo_client.cryptocurrency_database
-        self.collection = db.crypto_collection
+        try:
+            mongo_client = MongoClient('mongodb://localhost:27017/')
+            # specify the database
+            db = mongo_client.cryptocurrency_database
+            self.collection = db.crypto_collection
+        except:
+            err = sys.exc_info()[0]
+            logging.warning("Failed to connect with the MongoDB with error: %s", err)
 
         self.rating = Rating(db, currency)
 
@@ -109,22 +115,26 @@ class Coin:
         return jsonify(data)
 
     def save_to_db(self):
-        self.collection.insert_one({
-            "time": self.time,
-            "currency": self.currency,
-            "price": self.price,
-            "price_vs_open_%": self.percent_open(),
-            "close": self.close,
-            "last": self.last,
-            "volume": self.volume,
-            "low": self.low,
-            "high": self.high,
-            "open": self.open,
-            "market_capital": self.market_cap,
-            "trending": "UP" if self.money_book.trending else "DOWN",
-            "trending_ratio": self.money_book.ratio,
-            "bids": self.money_book.bids,
-            "asks": self.money_book.asks})
+        try:
+            self.collection.insert_one({
+                "time": self.time,
+                "currency": self.currency,
+                "price": self.price,
+                "price_vs_open_%": self.percent_open(),
+                "close": self.close,
+                "last": self.last,
+                "volume": self.volume,
+                "low": self.low,
+                "high": self.high,
+                "open": self.open,
+                "market_capital": self.market_cap,
+                "trending": "UP" if self.money_book.trending else "DOWN",
+                "trending_ratio": self.money_book.ratio,
+                "bids": self.money_book.bids,
+                "asks": self.money_book.asks})
+        except:
+            err = sys.exc_info()[0]
+            logging.warning("Failed saving crypto to MongoDB with error: %s", err)
 
     def percent_open(self):
         """
@@ -189,7 +199,12 @@ class Rating:
         self.utility_score = 0
         self.last_refreshed = ""
 
-        self.collection = db.rating_collection
+        try:
+            self.collection = db.rating_collection
+        except:
+            err = sys.exc_info()[0]
+            logging.warning("Could not initialize Rating collection in DB with error: %s", err)
+
         self.currency = currency
 
     def __str__(self):
@@ -218,16 +233,25 @@ class Rating:
         return data
 
     def save_to_db(self):
-        data = self.to_json()
-        data["currency"] = self.currency
-        self.collection.insert_one(data)
+        try:
+            data = self.to_json()
+            data["currency"] = self.currency
+            self.collection.insert_one(data)
+        except:
+            err = sys.exc_info()[0]
+            logging.warning("Could not save Rating in DB with error: %s", err)
+
 
     def filter_by_date(self, datefilter):
-        rating = self.collection.find_one({
-            "currency": self.currency,
-            "FCAS_SCORE": { "$ne": 0 },
-            "Last_Refreshed": { "$regex": "^" + str(datefilter) }
-            },
-            { "_id": 0 }
-            )
-        return rating
+        try:
+            rating = self.collection.find_one({
+                "currency": self.currency,
+                "FCAS_SCORE": { "$ne": 0 },
+                "Last_Refreshed": { "$regex": "^" + str(datefilter) }
+                },
+                { "_id": 0 }
+                )
+            return rating
+        except:
+            err = sys.exc_info()[0]
+            logging.warning("Could not check into the Rating DB with error: %s", err)

@@ -1,5 +1,5 @@
 aiohttp==3.6.2
--e git+git@github.com:rxmxn/alpha_vantage.git@64e7dae37f0d1dd2080a697789e8efe6e4a237d6#egg=alpha_vantage
+alpha_vantage==2.2.0
 async-timeout==3.0.1
 attrs==20.1.0
 cbpro==1.1.4
