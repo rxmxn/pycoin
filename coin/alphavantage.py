@@ -1,5 +1,7 @@
 """Alpha_vantage Python Client wrapper"""
 import os
+import logging
+import sys
 from datetime import date
 from alpha_vantage.cryptocurrencies import CryptoCurrencies
 from coin.coin import Coin
@@ -57,3 +59,6 @@ class AlphaVantage:
             crypto.rating.last_refreshed = data['8. last refreshed']
         except ValueError as err:
             print("Currency %s is currently not getting any rating, returning error: %s" % (crypto.currency, err))
+        except:
+            err = sys.exc_info()[0]
+            logging.warning("Failed to get crypto rating with error: %s", err)

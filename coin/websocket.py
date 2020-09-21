@@ -37,6 +37,9 @@ class CoinbaseWebsocketClient(cbpro.WebsocketClient):
         self.products = [self.currency]
         self.channels = ['ticker']
 
+        self.analytics = Analytics(self.currency)
+
+
     def on_message(self, msg):
         if 'price' in msg and 'type' in msg:
             # Example of a msg
@@ -64,8 +67,7 @@ class CoinbaseWebsocketClient(cbpro.WebsocketClient):
             crypto.high = float(msg["high_24h"])
             crypto.time = msg["time"]
 
-            a = Analytics(self.currency)
-            a.analyze(crypto)
+            self.analytics.analyze(crypto)
 
     def on_close(self):
         print("-- Closing WebSocket --")

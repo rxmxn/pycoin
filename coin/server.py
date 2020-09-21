@@ -17,7 +17,8 @@ class Server():
         """Communicate with your Crypto Account throgh this Server"""
         logging.basicConfig(filename='pycoin.log', level=logging.INFO)
         logging.info('Starting PyCoin')
-        app.run(debug=True)
+        #app.run(host="0.0.0.0", port=int("5000"), debug=True)
+        app.run(host="127.0.0.1", port=int("5000"), debug=True)
 
     @app.route('/start-websocket/<currency>', methods=['GET'])
     def start_websocket(currency):
